@@ -1,0 +1,7 @@
+PRAGMA foreign_keys = ON;
+CREATE TABLE IF NOT EXISTS reports (student_id TEXT PRIMARY KEY, name TEXT NOT NULL, payload TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, username TEXT NOT NULL UNIQUE COLLATE NOCASE, display_name TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('admin','student')), student_id TEXT REFERENCES reports(student_id), salt TEXT NOT NULL, password_hash TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, must_change INTEGER NOT NULL DEFAULT 1, created_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS sessions (token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), expires_at INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS sessions_user ON sessions(user_id);
+CREATE TABLE IF NOT EXISTS rate_limits (key TEXT PRIMARY KEY, hits INTEGER NOT NULL, expires_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS setup_lock (id INTEGER PRIMARY KEY CHECK(id=1));
